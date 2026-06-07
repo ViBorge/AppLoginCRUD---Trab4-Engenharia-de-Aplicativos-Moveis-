@@ -1,4 +1,4 @@
-# TÍTULO DO PROJETO
+# Aplicativo de Login
 
 `PPC-CC: PUC Poços de Caldas - Ciência da Computação`
 `Disciplina: Engenharia de Aplicações Móveis`
