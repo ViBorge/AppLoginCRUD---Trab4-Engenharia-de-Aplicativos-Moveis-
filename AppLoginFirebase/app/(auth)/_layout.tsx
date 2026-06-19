@@ -1,35 +1,22 @@
-import { Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 import React from 'react';
+import { AuthProvider } from '../src/contexts/AuthContext'; 
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function RootLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+    // O AuthProvider envolve o app para sabermos se o usuário está logado
+    <AuthProvider>
+      {/* O Stack gerencia a transição de telas sem mostrar uma barra inferior */}
+      <Stack screenOptions={{ headerShown: false }}>
+        
+        {/* Telas Públicas */}
+        <Stack.Screen name="index" options={{ title: 'Login' }} />
+        <Stack.Screen name="cadastro" options={{ title: 'Criar Conta' }} />
+        
+        {/* Você pode adicionar a tela de perfil aqui depois */}
+        {/* <Stack.Screen name="perfil" /> */}
+        
+      </Stack>
+    </AuthProvider>
   );
 }

@@ -117,12 +117,9 @@ export default function EditarPerfilScreen() {
       />
 
       <TextInput
-        style={styles.input}
-        placeholder="E-mail"
+        style={[styles.input, { backgroundColor: '#f0f0f0' }]}
         value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        editable={false}
       />
 
       <TouchableOpacity
@@ -141,9 +138,8 @@ export default function EditarPerfilScreen() {
 
       <TouchableOpacity
         style={styles.cancelButton}
-        onPress={() =>
+        onPress={() => router.back()}
           router.replace("/(auth)/perfil")
-        }
       >
         <Text style={styles.buttonText}>
           Cancelar
