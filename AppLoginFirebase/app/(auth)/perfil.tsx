@@ -7,7 +7,8 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { router } from "expo-router";
+import { useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 
 import { auth, db } from "../../src/services/firebaseConfig";
 
@@ -46,9 +47,11 @@ export default function PerfilScreen() {
     }
   }
 
-  useEffect(() => {
-    carregarUsuario();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      carregarUsuario();
+    }, [])
+  );
 
   async function handleLogout() {
     try {
