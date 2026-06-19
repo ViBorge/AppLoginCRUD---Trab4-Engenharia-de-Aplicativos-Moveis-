@@ -13,7 +13,7 @@ import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
-import { auth, db } from "../src/services/firebase";
+import { auth, db } from "../src/services/firebaseConfig";
 
 export default function CadastroScreen() {
   const [nome, setNome] = useState("");

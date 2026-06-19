@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 
-import { auth, db } from "../../src/services/firebase";
+import { auth, db } from "../../src/services/firebaseConfig";
 
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { deleteUser, signOut } from "firebase/auth";

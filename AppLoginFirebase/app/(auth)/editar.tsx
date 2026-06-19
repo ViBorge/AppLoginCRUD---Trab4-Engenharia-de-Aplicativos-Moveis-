@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 
-import { auth, db } from "../../src/services/firebase";
+import { auth, db } from "../../src/services/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function EditarPerfilScreen() {
@@ -139,11 +139,10 @@ export default function EditarPerfilScreen() {
       <TouchableOpacity
         style={styles.cancelButton}
         onPress={() => router.back()}
-          router.replace("/(auth)/perfil")
       >
-        <Text style={styles.buttonText}>
-          Cancelar
-        </Text>
+       <Text style={styles.buttonText}>
+        Cancelar
+      </Text>
       </TouchableOpacity>
     </View>
   );
