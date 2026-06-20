@@ -1,57 +1,68 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
-import { router } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../src/services/firebaseConfig";
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  ActivityIndicator 
+} from 'react-native';
+import { router } from 'expo-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
+import { auth } from '../src/services/firebaseConfig';
+import { CustomInput } from '../src/components/CustomInput';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const [erroMsg, setErroMsg] = useState('');
 
   async function handleLogin() {
-    if (!email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos.");
+    setErroMsg('');
+
+    // Mensagem de erro: Campos incompletos
+    if (!email.trim() || !senha.trim()) {
+      setErroMsg("Campos incompletos. Preencha e-mail e senha.");
       return;
     }
 
     try {
       setLoading(true);
+      
+      await signInWithEmailAndPassword(auth, email.trim(), senha);
+      
+      setEmail('');
+      setSenha('');
+      router.replace('/(auth)/perfil');
 
-      await signInWithEmailAndPassword(
-        auth,
-        email.trim(),
-        senha
-      );
-
-      router.replace("/(auth)/perfil");
     } catch (error: any) {
-      let mensagem = "Erro ao realizar login.";
-
+      // Mensagem de erro: Erro inesperado (Fallback padrão)
+      let mensagem = "Erro inesperado ao tentar fazer login.";
+      
       switch (error.code) {
-        case "auth/invalid-email":
-          mensagem = "E-mail inválido.";
+        case 'auth/user-not-found':
+          // Mensagem de erro: Login não cadastrado
+          mensagem = "Login não cadastrado.";
           break;
-        case "auth/user-not-found":
-          mensagem = "Usuário não encontrado.";
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          // Mensagem de erro: Senha ou email incorreto
+          mensagem = "Senha ou e-mail incorreto.";
           break;
-        case "auth/wrong-password":
-          mensagem = "Senha incorreta.";
+        case 'auth/invalid-email':
+          mensagem = "O formato do e-mail digitado é inválido.";
           break;
-        case "auth/invalid-credential":
-          mensagem = "E-mail ou senha incorretos.";
+        case 'auth/network-request-failed':
+          mensagem = "Sem conexão com a internet.";
+          break;
+        case 'auth/too-many-requests':
+          mensagem = "Muitas tentativas falhas. Tente mais tarde.";
           break;
       }
 
-      Alert.alert("Login", mensagem);
+      setErroMsg(mensagem);
     } finally {
       setLoading(false);
     }
@@ -59,43 +70,44 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo</Text>
+      <Text style={styles.title}>Acesso ao Sistema</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="E-mail"
-        keyboardType="email-address"
-        autoCapitalize="none"
+      <CustomInput 
+        placeholder="Digite seu e-mail" 
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        secureTextEntry
+      
+      <CustomInput 
+        placeholder="Digite sua senha" 
         value={senha}
         onChangeText={setSenha}
+        secureTextEntry
       />
 
-      <TouchableOpacity
-        style={styles.button}
+      {erroMsg !== '' && (
+        <Text style={styles.errorText}>{erroMsg}</Text>
+      )}
+
+      <TouchableOpacity 
+        style={styles.loginButton} 
         onPress={handleLogin}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color="#FFF" size="small" />
         ) : (
           <Text style={styles.buttonText}>Entrar</Text>
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => router.push("/cadastro")}
+      <TouchableOpacity 
+        style={styles.linkButton} 
+        onPress={() => router.push('/cadastro')}
       >
-        <Text style={styles.link}>
-          Não possui conta? Cadastre-se
-        </Text>
+        <Text style={styles.linkText}>Não tem uma conta? Cadastre-se</Text>
       </TouchableOpacity>
     </View>
   );
@@ -104,43 +116,42 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     padding: 24,
-    backgroundColor: "#fff",
+    justifyContent: 'center',
+    backgroundColor: '#FFF',
   },
-
   title: {
     fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 40,
+    color: '#333',
   },
-
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 15,
+  errorText: {
+    color: '#DC2626',
+    textAlign: 'center',
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
-
-  button: {
-    backgroundColor: "#2563EB",
+  loginButton: {
+    backgroundColor: '#2563EB',
     padding: 15,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
+    marginTop: 10,
   },
-
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#FFF',
+    fontWeight: 'bold',
     fontSize: 16,
   },
-
-  link: {
+  linkButton: {
     marginTop: 20,
-    textAlign: "center",
-    color: "#2563EB",
-    fontWeight: "600",
+    alignItems: 'center',
   },
+  linkText: {
+    color: '#2563EB',
+    fontSize: 16,
+    fontWeight: 'bold',
+  }
 });
