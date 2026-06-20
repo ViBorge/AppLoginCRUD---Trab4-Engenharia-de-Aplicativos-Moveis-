@@ -1,4 +1,4 @@
-// Funções vazias (Stubs) que depois receberão a lógica do Firebase
+
 export async function createUser(data: any) {
   console.log("Simulando criação de usuário:", data);
   return true;

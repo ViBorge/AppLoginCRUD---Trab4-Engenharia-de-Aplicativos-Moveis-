@@ -16,12 +16,12 @@ export function CustomInput(props: CustomInputProps) {
 const styles = StyleSheet.create({
  input: {
     borderWidth: 2,
-    borderColor: '#333333', // Borda cinza
+    borderColor: '#333333',
     borderRadius: 4,
     padding: 16,
     marginBottom: 15,
-    backgroundColor: '#121214', // Fundo levemente mais claro que a tela
-    color: '#FFFFFF', // Cor do texto que o usuário digita (Branco)
+    backgroundColor: '#121214', 
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
   }

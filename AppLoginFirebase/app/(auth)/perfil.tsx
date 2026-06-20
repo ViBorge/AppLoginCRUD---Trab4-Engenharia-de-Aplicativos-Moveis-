@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-// CORREÇÃO 1: Importação do 'router' que estava faltando
 import { useFocusEffect, router } from "expo-router";
 
 import { auth, db } from "../../src/services/firebaseConfig";
@@ -24,7 +23,6 @@ export default function PerfilScreen() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // CORREÇÃO 2: Estados isolados para não travar a tela inteira durante uma ação
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -88,16 +86,14 @@ export default function PerfilScreen() {
 
               if (!user) return;
 
-              // Apaga primeiro do banco de dados (Firestore)
               await deleteDoc(doc(db, "usuarios", user.uid));
               
-              // Depois apaga o login (Authentication)
               await deleteUser(user);
 
               Alert.alert("Sucesso", "Sua conta foi excluída para sempre.");
               router.replace("/");
             } catch (error: any) {
-              // Quando o login é antigo, o Firebase exige relogar por segurança antes de excluir
+              
               if (error.code === 'auth/requires-recent-login') {
                 Alert.alert("Aviso de Segurança", "Por segurança, você precisa fazer login novamente para excluir a conta.");
                 await signOut(auth);
