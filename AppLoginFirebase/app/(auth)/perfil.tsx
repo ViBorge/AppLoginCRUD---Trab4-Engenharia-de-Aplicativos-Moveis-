@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,10 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+// CORREÇÃO 1: Importação do 'router' que estava faltando
+import { useFocusEffect, router } from "expo-router";
 
 import { auth, db } from "../../src/services/firebaseConfig";
-
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { deleteUser, signOut } from "firebase/auth";
 
@@ -24,6 +23,10 @@ interface Usuario {
 export default function PerfilScreen() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // CORREÇÃO 2: Estados isolados para não travar a tela inteira durante uma ação
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function carregarUsuario() {
     try {
@@ -39,6 +42,8 @@ export default function PerfilScreen() {
 
       if (docSnap.exists()) {
         setUsuario(docSnap.data() as Usuario);
+      } else {
+        Alert.alert("Aviso", "Dados do usuário não encontrados no banco.");
       }
     } catch (error) {
       Alert.alert("Erro", "Não foi possível carregar os dados.");
@@ -55,17 +60,19 @@ export default function PerfilScreen() {
 
   async function handleLogout() {
     try {
+      setIsLoggingOut(true);
       await signOut(auth);
       router.replace("/");
     } catch {
-      Alert.alert("Erro", "Não foi possível sair.");
+      Alert.alert("Erro", "Não foi possível sair do aplicativo.");
+      setIsLoggingOut(false);
     }
   }
 
   async function handleExcluirConta() {
     Alert.alert(
       "Excluir Conta",
-      "Tem certeza que deseja excluir sua conta?",
+      "Essa ação é irreversível. Tem certeza que deseja apagar todos os seus dados?",
       [
         {
           text: "Cancelar",
@@ -76,27 +83,30 @@ export default function PerfilScreen() {
           style: "destructive",
           onPress: async () => {
             try {
+              setIsDeleting(true);
               const user = auth.currentUser;
 
               if (!user) return;
 
-              await deleteDoc(
-                doc(db, "usuarios", user.uid)
-              );
-
+              // Apaga primeiro do banco de dados (Firestore)
+              await deleteDoc(doc(db, "usuarios", user.uid));
+              
+              // Depois apaga o login (Authentication)
               await deleteUser(user);
 
-              Alert.alert(
-                "Sucesso",
-                "Conta excluída com sucesso."
-              );
-
+              Alert.alert("Sucesso", "Sua conta foi excluída para sempre.");
               router.replace("/");
             } catch (error: any) {
-              Alert.alert(
-                "Erro",
-                "Faça login novamente para excluir a conta."
-              );
+              // Quando o login é antigo, o Firebase exige relogar por segurança antes de excluir
+              if (error.code === 'auth/requires-recent-login') {
+                Alert.alert("Aviso de Segurança", "Por segurança, você precisa fazer login novamente para excluir a conta.");
+                await signOut(auth);
+                router.replace("/");
+              } else {
+                Alert.alert("Erro", "Não foi possível excluir a conta no momento.");
+              }
+            } finally {
+              setIsDeleting(false);
             }
           },
         },
@@ -107,7 +117,7 @@ export default function PerfilScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#2563EB" />
       </View>
     );
   }
@@ -119,45 +129,45 @@ export default function PerfilScreen() {
       <View style={styles.card}>
         <Text style={styles.label}>Nome</Text>
         <Text style={styles.value}>
-          {usuario?.nome}
+          {usuario?.nome || "Carregando..."}
         </Text>
 
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>E-mail</Text>
         <Text style={styles.value}>
-          {usuario?.email}
-        </Text>
-
-        <Text style={styles.label}>UID</Text>
-        <Text style={styles.uid}>
-          {usuario?.uid}
+          {usuario?.email || "Carregando..."}
         </Text>
       </View>
 
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => router.push("/(auth)/editar")}
+        disabled={isDeleting || isLoggingOut}
       >
-        <Text style={styles.buttonText}>
-          Editar Perfil
-        </Text>
+        <Text style={styles.buttonText}>Editar Perfil</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={handleExcluirConta}
+        disabled={isDeleting || isLoggingOut}
       >
-        <Text style={styles.buttonText}>
-          Excluir Conta
-        </Text>
+        {isDeleting ? (
+          <ActivityIndicator color="#FFF" size="small" />
+        ) : (
+          <Text style={styles.buttonText}>Excluir Conta</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.logoutButton}
         onPress={handleLogout}
+        disabled={isDeleting || isLoggingOut}
       >
-        <Text style={styles.buttonText}>
-          Sair
-        </Text>
+        {isLoggingOut ? (
+           <ActivityIndicator color="#FFF" size="small" />
+        ) : (
+          <Text style={styles.buttonText}>Sair do Aplicativo</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -167,68 +177,61 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
-  },
-
-  container: {
-    flex: 1,
-    padding: 20,
     backgroundColor: "#FFF",
   },
-
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#FFF",
+  },
   title: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: "bold",
     marginTop: 40,
-    marginBottom: 20,
+    marginBottom: 30,
     textAlign: "center",
+    color: "#333",
   },
-
   card: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#F9FAFB",
     padding: 20,
-    borderRadius: 10,
-    marginBottom: 25,
+    borderRadius: 12,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
-
   label: {
     fontSize: 14,
-    color: "#666",
+    color: "#6B7280",
     marginTop: 10,
+    fontWeight: "500",
   },
-
   value: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#111827",
+    marginBottom: 5,
   },
-
-  uid: {
-    fontSize: 12,
-    color: "#666",
-  },
-
   editButton: {
     backgroundColor: "#2563EB",
-    padding: 15,
+    padding: 16,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
   },
-
   deleteButton: {
     backgroundColor: "#DC2626",
-    padding: 15,
+    padding: 16,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
   },
-
   logoutButton: {
-    backgroundColor: "#6B7280",
-    padding: 15,
+    backgroundColor: "#4B5563",
+    padding: 16,
     borderRadius: 8,
     alignItems: "center",
   },
-
   buttonText: {
     color: "#FFF",
     fontWeight: "bold",
