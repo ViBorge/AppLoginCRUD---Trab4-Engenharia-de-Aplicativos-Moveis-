@@ -17,7 +17,6 @@ import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 
 export default function EditarPerfilScreen() {
   const [nome, setNome] = useState("");
   
-  // Estados para a troca de senha (opcionais)
   const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("");
@@ -26,7 +25,6 @@ export default function EditarPerfilScreen() {
   const [carregandoDados, setCarregandoDados] = useState(true);
   const [erroMsg, setErroMsg] = useState("");
 
-  // Carrega o nome atual do usuário assim que a tela abre
   useEffect(() => {
     async function carregarDados() {
       try {
@@ -56,7 +54,6 @@ export default function EditarPerfilScreen() {
       return;
     }
 
-    // Lógica condicional: O usuário quer trocar a senha?
     const querTrocarSenha = novaSenha.trim() !== "" || confirmarNovaSenha.trim() !== "";
 
     if (querTrocarSenha) {
@@ -80,24 +77,17 @@ export default function EditarPerfilScreen() {
 
       if (!user || !user.email) throw new Error("Usuário não encontrado");
 
-      // 1. Atualiza o Nome no Firestore (Sempre executa)
       const docRef = doc(db, "usuarios", user.uid);
       await updateDoc(docRef, { nome: nome.trim() });
 
-      // 2. Atualiza a Senha no Authentication (Apenas se solicitado)
       if (querTrocarSenha) {
-        // Cria a credencial para provar ao Firebase que o dono da conta está presente
         const credencial = EmailAuthProvider.credential(user.email, senhaAtual);
-        
-        // Reautentica o usuário nos bastidores
         await reauthenticateWithCredential(user, credencial);
-        
-        // Aplica a nova senha
         await updatePassword(user, novaSenha);
       }
 
       Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
-      router.back(); // Retorna para a tela de perfil
+      router.back();
 
     } catch (error: any) {
       let mensagem = "Erro inesperado ao atualizar perfil.";
@@ -123,7 +113,7 @@ export default function EditarPerfilScreen() {
   if (carregandoDados) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2563EB" />
+        <ActivityIndicator size="large" color="#FF0055" />
       </View>
     );
   }
@@ -136,6 +126,7 @@ export default function EditarPerfilScreen() {
       <TextInput
         style={styles.input}
         placeholder="Seu Nome"
+        placeholderTextColor="#71717A"
         value={nome}
         onChangeText={setNome}
       />
@@ -144,6 +135,7 @@ export default function EditarPerfilScreen() {
       <TextInput
         style={styles.input}
         placeholder="Senha Atual"
+        placeholderTextColor="#71717A"
         secureTextEntry
         value={senhaAtual}
         onChangeText={setSenhaAtual}
@@ -152,6 +144,7 @@ export default function EditarPerfilScreen() {
       <TextInput
         style={styles.input}
         placeholder="Nova Senha"
+        placeholderTextColor="#71717A"
         secureTextEntry
         value={novaSenha}
         onChangeText={setNovaSenha}
@@ -160,6 +153,7 @@ export default function EditarPerfilScreen() {
       <TextInput
         style={styles.input}
         placeholder="Confirmar Nova Senha"
+        placeholderTextColor="#71717A"
         secureTextEntry
         value={confirmarNovaSenha}
         onChangeText={setConfirmarNovaSenha}
@@ -173,7 +167,7 @@ export default function EditarPerfilScreen() {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#FFF" />
+          <ActivityIndicator color="#09090B" />
         ) : (
           <Text style={styles.buttonText}>Salvar Alterações</Text>
         )}
@@ -194,64 +188,77 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "#FFF",
+    backgroundColor: "#09090B",
   },
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: "#FFF",
+    backgroundColor: "#09090B",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
+    fontSize: 38,
+    fontWeight: "900",
     marginBottom: 30,
     marginTop: 20,
     textAlign: "center",
-    color: "#333",
+    color: "#FFFFFF",
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    textShadowColor: "#FF0055",
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 1,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
-    color: "#4B5563",
+    color: "#E1E1E6",
     marginBottom: 10,
     marginTop: 10,
+    textTransform: "uppercase",
+    letterSpacing: 1,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#333333",
+    borderRadius: 4,
     padding: 14,
     marginBottom: 15,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#121214",
+    color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "bold",
   },
   errorText: {
-    color: "#DC2626",
+    color: "#FF0055",
     textAlign: "center",
     marginBottom: 15,
     fontWeight: "bold",
+    fontSize: 15,
   },
   saveButton: {
-    backgroundColor: "#2563EB",
+    backgroundColor: "#FFFFFF",
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 4,
     alignItems: "center",
-    marginTop: 10,
-    marginBottom: 15,
+    marginTop: 15,
+    borderWidth: 2,
+    borderColor: "#FF0055",
   },
   buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: "#09090B",
+    fontWeight: "900",
+    fontSize: 18,
+    textTransform: "uppercase",
   },
   cancelButton: {
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 4,
     alignItems: "center",
   },
   cancelButtonText: {
-    color: "#6B7280",
+    color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
+    textDecorationLine: "underline",
   },
 });

@@ -16,13 +16,11 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  
   const [erroMsg, setErroMsg] = useState('');
 
   async function handleLogin() {
     setErroMsg('');
 
-    // Mensagem de erro: Campos incompletos
     if (!email.trim() || !senha.trim()) {
       setErroMsg("Campos incompletos. Preencha e-mail e senha.");
       return;
@@ -30,25 +28,19 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      
       await signInWithEmailAndPassword(auth, email.trim(), senha);
-      
       setEmail('');
       setSenha('');
       router.replace('/(auth)/perfil');
-
     } catch (error: any) {
-      // Mensagem de erro: Erro inesperado (Fallback padrão)
       let mensagem = "Erro inesperado ao tentar fazer login.";
       
       switch (error.code) {
         case 'auth/user-not-found':
-          // Mensagem de erro: Login não cadastrado
           mensagem = "Login não cadastrado.";
           break;
         case 'auth/wrong-password':
         case 'auth/invalid-credential':
-          // Mensagem de erro: Senha ou email incorreto
           mensagem = "Senha ou e-mail incorreto.";
           break;
         case 'auth/invalid-email':
@@ -61,7 +53,6 @@ export default function LoginScreen() {
           mensagem = "Muitas tentativas falhas. Tente mais tarde.";
           break;
       }
-
       setErroMsg(mensagem);
     } finally {
       setLoading(false);
@@ -97,7 +88,7 @@ export default function LoginScreen() {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#FFF" size="small" />
+          <ActivityIndicator color="#09090B" size="small" />
         ) : (
           <Text style={styles.buttonText}>Entrar</Text>
         )}
@@ -113,45 +104,63 @@ export default function LoginScreen() {
   );
 }
 
+// O StyleSheet fica sempre de fora e no final do arquivo
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
     justifyContent: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#09090B', // Fundo super escuro (Dark Mode puro)
   },
+  
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 38, // Ajustado para não quebrar a linha em telas menores
+    fontWeight: '900', // Fonte bem grossa para dar o estilo grafite
     textAlign: 'center',
     marginBottom: 40,
-    color: '#333',
+    color: '#FFFFFF', // Letra branca
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    // --- O HACK DO CONTORNO DE GRAFITE ---
+    textShadowColor: '#FF0055', // Cor do contorno (Rosa Choque/Spray)
+    textShadowOffset: { width: 3, height: 3 }, // Deslocamento do contorno
+    textShadowRadius: 1, // Quase zero para ficar um traço sólido
   },
+
   errorText: {
-    color: '#DC2626',
+    color: '#FF0055', 
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 15,
     fontWeight: 'bold',
+    fontSize: 15,
   },
+
   loginButton: {
-    backgroundColor: '#2563EB',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: '#FFFFFF', // Botão branco
+    padding: 16,
+    borderRadius: 4, // Borda levemente quadrada (estilo mais bruto)
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 15,
+    borderWidth: 2,
+    borderColor: '#FF0055', // Borda do botão acompanhando o tema
   },
+
   buttonText: {
-    color: '#FFF',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: '#09090B', // Letra preta no fundo branco do botão
+    fontWeight: '900',
+    fontSize: 18,
+    textTransform: 'uppercase',
   },
+
   linkButton: {
-    marginTop: 20,
+    marginTop: 25,
     alignItems: 'center',
   },
+
   linkText: {
-    color: '#2563EB',
-    fontSize: 16,
+    color: '#FFFFFF', // Texto branco
+    fontSize: 15,
     fontWeight: 'bold',
+    textDecorationLine: 'underline', // Sublinhado para destacar
   }
 });

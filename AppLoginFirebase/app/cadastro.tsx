@@ -22,14 +22,11 @@ export default function CadastroScreen() {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   
   const [loading, setLoading] = useState(false);
-  // 1. Criamos o estado de erro para manter a consistência com a tela de Login
   const [erroMsg, setErroMsg] = useState("");
 
   async function handleCadastro() {
-    // 2. Limpa erros antigos a cada nova tentativa
     setErroMsg("");
 
-    // 3. Validações Locais com feedback visual direto
     if (!nome.trim() || !email.trim() || !senha.trim() || !confirmarSenha.trim()) {
       setErroMsg("Preencha todos os campos.");
       return;
@@ -48,7 +45,6 @@ export default function CadastroScreen() {
     try {
       setLoading(true);
 
-      // Cria usuário no Authentication
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email.trim(),
@@ -57,7 +53,6 @@ export default function CadastroScreen() {
 
       const uid = userCredential.user.uid;
 
-      // Salva informações no banco de dados Firestore
       await setDoc(doc(db, "usuarios", uid), {
         uid,
         nome: nome.trim(),
@@ -65,14 +60,10 @@ export default function CadastroScreen() {
         criadoEm: new Date(),
       });
 
-      // Mantemos o Alert nativo APENAS para o caso de sucesso, 
-      // pois ele serve como uma confirmação positiva antes da troca de tela.
       Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
-      
       router.replace("/(auth)/perfil");
 
     } catch (error: any) {
-      // 4. Captura e tradução de erros vindos do servidor do Firebase
       let mensagem = "Erro inesperado ao realizar cadastro.";
 
       switch (error.code) {
@@ -103,6 +94,7 @@ export default function CadastroScreen() {
       <TextInput
         style={styles.input}
         placeholder="Nome"
+        placeholderTextColor="#71717A"
         value={nome}
         onChangeText={setNome}
       />
@@ -110,6 +102,7 @@ export default function CadastroScreen() {
       <TextInput
         style={styles.input}
         placeholder="E-mail"
+        placeholderTextColor="#71717A"
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
@@ -119,6 +112,7 @@ export default function CadastroScreen() {
       <TextInput
         style={styles.input}
         placeholder="Senha (mínimo 6 caracteres)"
+        placeholderTextColor="#71717A"
         secureTextEntry
         value={senha}
         onChangeText={setSenha}
@@ -127,12 +121,12 @@ export default function CadastroScreen() {
       <TextInput
         style={styles.input}
         placeholder="Confirmar Senha"
+        placeholderTextColor="#71717A"
         secureTextEntry
         value={confirmarSenha}
         onChangeText={setConfirmarSenha}
       />
 
-      {/* 5. Exibição da mensagem de erro em vermelho logo acima do botão */}
       {erroMsg !== "" && (
         <Text style={styles.errorText}>{erroMsg}</Text>
       )}
@@ -143,7 +137,7 @@ export default function CadastroScreen() {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#FFF" />
+          <ActivityIndicator color="#09090B" />
         ) : (
           <Text style={styles.buttonText}>Cadastrar</Text>
         )}
@@ -161,43 +155,59 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "#fff",
+    backgroundColor: "#09090B",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
+    fontSize: 38,
+    fontWeight: "900",
     textAlign: "center",
     marginBottom: 30,
+    color: "#FFFFFF",
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    textShadowColor: "#FF0055",
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 1,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    padding: 14,
+    borderWidth: 2,
+    borderColor: "#333333",
+    borderRadius: 4,
+    padding: 16,
     marginBottom: 15,
+    backgroundColor: "#121214",
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   errorText: {
-    color: '#DC2626', // Vermelho forte
-    textAlign: 'center',
+    color: "#FF0055",
+    textAlign: "center",
     marginBottom: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    fontSize: 15,
   },
   button: {
-    backgroundColor: "#2563EB",
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    borderRadius: 4,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 15,
+    borderWidth: 2,
+    borderColor: "#FF0055",
   },
   buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: "#09090B",
+    fontWeight: "900",
+    fontSize: 18,
+    textTransform: "uppercase",
   },
   link: {
-    marginTop: 20,
+    marginTop: 25,
     textAlign: "center",
-    color: "#2563EB",
-    fontWeight: "600",
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    fontSize: 15,
   },
 });

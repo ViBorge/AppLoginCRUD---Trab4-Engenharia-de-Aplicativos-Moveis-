@@ -14,13 +14,15 @@ export function CustomInput(props: CustomInputProps) {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: '#f5f5f5',
-    padding: 15,
-    borderRadius: 8,
+ input: {
+    borderWidth: 2,
+    borderColor: '#333333', // Borda cinza
+    borderRadius: 4,
+    padding: 16,
     marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    backgroundColor: '#121214', // Fundo levemente mais claro que a tela
+    color: '#FFFFFF', // Cor do texto que o usuário digita (Branco)
     fontSize: 16,
-  },
+    fontWeight: 'bold',
+  }
 });
