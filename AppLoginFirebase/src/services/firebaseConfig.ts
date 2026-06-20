@@ -3,13 +3,23 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "COLE_A_API_KEY_AQUI",
-  authDomain: "COLE_O_AUTH_DOMAIN_AQUI",
-  projectId: "COLE_O_PROJECT_ID_AQUI",
-  storageBucket: "COLE_O_STORAGE_BUCKET_AQUI",
-  messagingSenderId: "COLE_O_MESSAGING_SENDER_ID_AQUI",
-  appId: "COLE_O_APP_ID_AQUI"
+
+  apiKey: "AIzaSyBjWzG2x20I9OFlQks04yW0bQmnrwqKXHs",
+
+  authDomain: "apploginfirebase-e176d.firebaseapp.com",
+
+  projectId: "apploginfirebase-e176d",
+
+  storageBucket: "apploginfirebase-e176d.firebasestorage.app",
+
+  messagingSenderId: "436640431080",
+
+  appId: "1:436640431080:web:efd65f1cfafe80dd22025d",
+
+  measurementId: "G-W6MHT4T45N"
+
 };
+
 
 const app = initializeApp(firebaseConfig);
 
