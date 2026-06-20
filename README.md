@@ -37,6 +37,6 @@ Gravar um vídeo de explicação do código-fonte e demonstração das funcional
 
 # Video de apresentação
 
-[<li><a href="src/README.md"> Video YouTube</a></li>](https://www.youtube.com/watch?v=6RF0tcZ-zG8)
+https://www.youtube.com/watch?v=6RF0tcZ-zG8 
 
 
