@@ -30,8 +30,13 @@ Implemente uma aplicação que contemple os seguintes requisitos:
 
 Durante a aula foi/será abordado o uso do FireBase e a implementação de referência disponível na página principal da disciplina (arquivo app-firebase.jsDownload app-firebase.js).
 
+Gravar um vídeo de explicação do código-fonte e demonstração das funcionalidades do projeto, fazer o upload no youtube, entregar o link do repositório no GitHub e anexar a imagem com o QR Code da Aplicação para ser executada no Expo.
+
+<img width="305" height="322" alt="image" src="https://github.com/user-attachments/assets/ecd32a3a-89b3-4c45-92a8-8e1c53eeb962" />
+
+
 # Video de apresentação
 
-<li><a href="src/README.md"> Código Fonte</a></li>
+<li><a href="src/README.md"> Video YouTube</a></li>
 
 
