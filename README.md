@@ -30,7 +30,7 @@ Implemente uma aplicação que contemple os seguintes requisitos:
 
 Durante a aula foi/será abordado o uso do FireBase e a implementação de referência disponível na página principal da disciplina (arquivo app-firebase.jsDownload app-firebase.js).
 
-# Código
+# Video de apresentação
 
 <li><a href="src/README.md"> Código Fonte</a></li>
 
